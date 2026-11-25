@@ -1,0 +1,758 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Visuals by Vrushali — The Wander</title>
+<meta name="description" content="Visuals by Vrushali: AI video ads that turn product images into cinematic visual stories, without a traditional shoot.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wdth,wght@12..96,75..100,300..800&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<style>
+:root{
+  --blush:#EFC9D3; --rose:#D98BA0; --espresso:#3B2622; --choc:#2A1C18; --cream:#F7EEE4; --sand:#E8D7C3;
+  --emerald:#1F5E4A; --emerald-d:#123B30; --gold:#C9973F; --amber:#E0A84A; --leaf:#4F7A45; --velvet:#1B2147;
+  --ease:cubic-bezier(.2,.7,.2,1); --spring:cubic-bezier(.3,1.5,.5,1);
+  --display:'Bricolage Grotesque',system-ui,sans-serif; --serif:'Instrument Serif',Georgia,serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{-webkit-text-size-adjust:100%}
+body{font-family:var(--display);font-variation-settings:'wdth' 100;letter-spacing:0;background:var(--cream);color:var(--espresso);overflow-x:hidden;-webkit-font-smoothing:antialiased}
+img{max-width:100%;display:block}
+a{color:inherit}
+button{font:inherit}
+.serif{font-family:var(--serif);font-style:italic;font-weight:400;letter-spacing:0}
+.vru-mark{width:1em;height:1em;display:inline-block;vertical-align:-.12em}
+
+/* ---------- NAV ---------- */
+.nav{position:fixed;inset:18px 18px auto 18px;z-index:50;display:flex;align-items:center;justify-content:space-between;gap:12px;pointer-events:none}
+.nav>*{pointer-events:auto}
+.brand{display:flex;align-items:center;gap:10px;text-decoration:none;font-weight:700;font-size:15px;letter-spacing:-.01em;padding:10px 16px 10px 12px;border-radius:99px;background:rgba(247,238,228,.86);backdrop-filter:blur(10px);color:var(--espresso)}
+.brand .vru-mark{font-size:22px;color:var(--rose);transition:transform .8s var(--spring)}
+.brand:hover .vru-mark{transform:rotate(90deg)}
+.nav-links{display:flex;gap:4px;padding:6px;border-radius:99px;background:rgba(247,238,228,.86);backdrop-filter:blur(10px)}
+.nav-links a{text-decoration:none;font-size:14px;font-weight:600;padding:9px 14px;border-radius:99px;transition:background .25s,color .25s}
+.nav-links a:hover{background:var(--espresso);color:var(--cream)}
+.nav-links a.cta{background:var(--espresso);color:var(--cream)}
+.nav-links a.cta:hover{background:var(--rose);color:var(--choc)}
+@media (max-width:760px){.nav-links a:not(.cta){display:none}.brand span{display:none}}
+
+/* ---------- WORLD (pinned, horizontal wander) ---------- */
+#world{--sky:#173C31;--ink:#F7EEE4;--ground:#0F2A22;position:relative;height:100vh;height:100svh;overflow:hidden;background:var(--sky);color:var(--ink)}
+.far{position:absolute;inset:0}
+.far svg{position:absolute;inset:-4%;width:108%;height:108%}
+.far .f{opacity:0}
+.far .f:first-child{opacity:1}
+.scene-scale{position:absolute;inset:0;transform-origin:50% 100%}
+.groundfill{position:absolute;left:-50vw;right:-50vw;bottom:0;height:calc(min(100vh,56.25vw)*.125);background:var(--ground)}
+.strip{position:absolute;left:0;bottom:0;height:100%;display:flex;will-change:transform}
+.strip .panel{flex:0 0 100vw;height:100%;position:relative}
+.strip.mid .panel{overflow:hidden}
+.strip .panel svg{position:absolute;inset:0;width:100%;height:100%;overflow:visible}
+.near{pointer-events:none}
+.near .leafy{position:absolute;bottom:-4vh;width:clamp(180px,24vw,420px);opacity:.95}
+.near .leafy svg{width:100%;height:auto;display:block}
+.char{position:absolute;z-index:6;left:21%;bottom:calc(min(100vh,56.25vw)*.085);height:calc(min(100vh,56.25vw)*.5);aspect-ratio:1/2;transform:translateX(-50%)}
+.char .inner{width:100%;height:100%;transition:transform .45s var(--ease)}
+.char.back .inner{transform:scaleX(-1)}
+.char .tag{position:absolute;left:62%;top:-8%;white-space:nowrap;font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;background:var(--cream);color:var(--espresso);padding:8px 12px;border-radius:12px 12px 12px 2px;box-shadow:0 8px 24px rgba(0,0,0,.18)}
+@media (min-aspect-ratio:5/4){
+  .chapter{max-width:min(560px,40vw)}
+  .char{left:49vw}
+  .strip.mid .panel svg{transform:translateX(8%)}
+}
+@media (max-aspect-ratio:4/5){
+  .scene-scale{transform:scale(1.75)}
+  .char{height:calc(56.25vw*.5*1.75);bottom:calc(56.25vw*.085*1.75);left:26%}
+}
+
+.chapters{position:absolute;inset:0;z-index:8;pointer-events:none}
+.chapter{position:absolute;left:clamp(16px,6vw,96px);top:clamp(96px,16vh,170px);max-width:min(640px,88vw);visibility:hidden}
+.chapter:first-child{visibility:visible}
+.chapter .eyebrow{display:inline-flex;align-items:center;gap:10px;font-size:13px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;opacity:.85;margin-bottom:18px}
+.chapter .eyebrow::before{content:"";width:28px;height:2px;background:currentColor}
+.chapter h1,.chapter h2{font-weight:800;font-variation-settings:'wdth' 92;line-height:1;letter-spacing:-.01em;font-size:clamp(46px,min(7.2vw,12vh),136px)}
+.chapter h2{font-size:clamp(34px,min(4.9vw,8.6vh),88px);line-height:1.04}
+.chapter h1 .serif,.chapter h2 .serif{font-weight:400;letter-spacing:-.01em}
+.chapter p{margin-top:20px;font-size:clamp(16px,1.3vw,19px);line-height:1.6;max-width:44ch;opacity:.92;font-variation-settings:'wdth' 100}
+.chapter .ctas{display:flex;flex-wrap:wrap;gap:12px;margin-top:28px;pointer-events:auto}
+.mask{display:inline-block;overflow:hidden;vertical-align:bottom;padding-bottom:.06em}
+.mask>span{display:inline-block}
+@media (max-aspect-ratio:4/5){.chapter{top:96px}.chapter p{font-size:15px;margin-top:14px}}
+
+.btn{display:inline-flex;align-items:center;gap:10px;text-decoration:none;font-weight:700;font-size:15px;padding:16px 24px;border-radius:99px;border:0;cursor:pointer;transition:background .25s,color .25s,box-shadow .3s;will-change:transform}
+.btn-solid{background:var(--blush);color:var(--choc);box-shadow:0 10px 30px rgba(0,0,0,.18)}
+.btn-solid:hover{background:var(--cream)}
+.btn-ghost{background:transparent;color:inherit;box-shadow:inset 0 0 0 2px currentColor}
+.btn-ghost:hover{background:var(--cream);color:var(--choc);box-shadow:inset 0 0 0 2px var(--cream)}
+.btn .arr{transition:transform .35s var(--spring)}
+.btn:hover .arr{transform:translateX(4px) rotate(-8deg)}
+
+.journey{position:absolute;z-index:9;left:50%;bottom:22px;transform:translateX(-50%);display:flex;gap:6px;padding:6px;border-radius:99px;background:rgba(20,14,12,.32);backdrop-filter:blur(10px)}
+.journey button{border:0;background:transparent;color:var(--ink);font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:8px 12px;border-radius:99px;cursor:pointer;opacity:.7;transition:all .35s var(--ease)}
+.journey button[aria-current=true]{background:var(--ink);color:var(--sky);opacity:1}
+.journey button:hover{opacity:1}
+@media (max-width:640px){.journey button span{display:none}.journey button::before{content:attr(data-n)}}
+.scroll-hint{position:absolute;z-index:9;right:clamp(16px,4vw,48px);bottom:28px;font-size:12px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;display:flex;align-items:center;gap:10px}
+.scroll-hint i{width:2px;height:36px;background:currentColor;opacity:.35;position:relative;overflow:hidden}
+.scroll-hint i::after{content:"";position:absolute;left:0;top:-40%;width:100%;height:40%;background:var(--ink);animation:drip 1.6s var(--ease) infinite}
+@keyframes drip{to{top:110%}}
+@media (max-width:640px){.scroll-hint{display:none}}
+
+.twinkle{animation:twinkle 2.4s ease-in-out infinite;transform-box:fill-box;transform-origin:center}
+.twinkle:nth-child(2n){animation-delay:.8s}.twinkle:nth-child(3n){animation-delay:1.5s}
+@keyframes twinkle{0%,100%{opacity:.2;transform:scale(.6)}50%{opacity:1;transform:scale(1)}}
+.sway{animation:sway 6s ease-in-out infinite;transform-box:fill-box;transform-origin:50% 0}
+@keyframes sway{50%{transform:rotate(3deg)}}
+.steam path{stroke-dasharray:12 14;animation:steam 2.2s linear infinite}
+@keyframes steam{to{stroke-dashoffset:-52}}
+.float{animation:float 7s ease-in-out infinite;transform-box:fill-box;transform-origin:center}
+@keyframes float{50%{transform:translateY(-14px) rotate(8deg)}}
+
+/* ---------- SECTIONS ---------- */
+section.s{position:relative;padding:clamp(88px,12vw,160px) clamp(16px,5vw,72px)}
+.s-head{display:grid;grid-template-columns:1fr;gap:18px;max-width:1280px;margin:0 auto 56px}
+.kicker{font-size:13px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;display:flex;align-items:center;gap:10px}
+.kicker .vru-mark{font-size:16px;color:var(--rose)}
+.s-head h2{font-size:clamp(44px,7vw,112px);font-weight:800;font-variation-settings:'wdth' 92;letter-spacing:-.01em;line-height:1.02}
+.s-head p{max-width:52ch;font-size:clamp(16px,1.3vw,19px);line-height:1.55;opacity:.85}
+.wrap{max-width:1280px;margin:0 auto}
+
+/* create */
+#create{background:var(--cream)}
+.cards{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+@media (max-width:980px){.cards{grid-template-columns:repeat(2,1fr)}}
+@media (max-width:620px){.cards{grid-template-columns:1fr}}
+.card{position:relative;border-radius:28px;padding:28px;min-height:300px;display:flex;flex-direction:column;justify-content:space-between;background:var(--sand);overflow:hidden;transform-style:preserve-3d;transition:box-shadow .4s var(--ease),background .4s;will-change:transform}
+.card:nth-child(2){background:var(--blush)}.card:nth-child(3){background:#DCE6D3}
+.card:nth-child(4){background:#F3DDB9}.card:nth-child(5){background:#E9D2DA}.card:nth-child(6){background:#D9E3E0}
+.card:hover{box-shadow:0 30px 60px -20px rgba(59,38,34,.35)}
+.card .num{font-family:var(--serif);font-style:italic;font-size:22px;opacity:.6}
+.card .ico{width:84px;height:84px;margin:18px 0 26px;transition:transform .6s var(--spring)}
+.card:hover .ico{transform:translateY(-6px) rotate(-6deg) scale(1.06)}
+.card h3{font-size:28px;font-weight:800;font-variation-settings:'wdth' 92;letter-spacing:-.005em;line-height:1.1}
+.card p{margin-top:10px;font-size:16px;line-height:1.5;opacity:.8}
+.card .pill{align-self:flex-start;margin-top:18px;font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;padding:7px 12px;border-radius:99px;background:rgba(59,38,34,.1);transition:background .3s,color .3s}
+.card:hover .pill{background:var(--espresso);color:var(--cream)}
+
+/* work */
+#work{background:var(--espresso);color:var(--cream);overflow:hidden}
+#work::before{content:"";position:absolute;inset:0;opacity:.07;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240' viewBox='0 0 240 240'%3E%3Cpath d='M20 230 C60 160 40 90 110 20 M70 240 C110 170 150 140 230 120 M0 120 C50 110 90 60 120 0' stroke='%23EFC9D3' stroke-width='1.4' fill='none'/%3E%3C/svg%3E")}
+.controls{display:flex;flex-wrap:wrap;justify-content:space-between;gap:14px;margin-bottom:34px}
+.seg{display:flex;flex-wrap:wrap;gap:6px;padding:6px;border-radius:99px;background:rgba(247,238,228,.08)}
+.seg button{border:0;cursor:pointer;background:transparent;color:var(--cream);font-weight:700;font-size:14px;padding:10px 16px;border-radius:99px;transition:background .3s,color .3s,transform .3s var(--spring)}
+.seg button:hover{transform:translateY(-2px)}
+.seg button[aria-pressed=true]{background:var(--blush);color:var(--choc)}
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;align-items:start}
+@media (max-width:980px){.grid{grid-template-columns:repeat(2,1fr)}}
+@media (max-width:560px){.grid{grid-template-columns:1fr}}
+.item{border-radius:22px;overflow:hidden;background:#2A1C18}
+.item .media{aspect-ratio:var(--ar,9/16);border-radius:22px}
+.grid[data-ar="9/16"]{--ar:9/16}.grid[data-ar="16/9"]{--ar:16/9}.grid[data-ar="1/1"]{--ar:1/1}
+.item figcaption{padding:16px 6px 6px;display:flex;justify-content:space-between;align-items:flex-start;gap:10px}
+.item h3{font-size:20px;font-weight:700;letter-spacing:-.01em}
+.item .tags{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}
+.item .tags span{font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;padding:6px 9px;border-radius:99px;background:rgba(239,201,211,.14);color:var(--blush);white-space:nowrap}
+.item.hide{display:none}
+.item-ig .media{display:grid;place-items:center;background:radial-gradient(120% 90% at 30% 10%,#E46F86,#7E2E3C 55%,#2A1C18);text-decoration:none;color:var(--cream)}
+.item-ig .ig-in{text-align:center;padding:24px}
+.item-ig .ig-in b{display:block;font-size:clamp(22px,2.4vw,32px);font-weight:800;letter-spacing:-.01em;line-height:1}
+.item-ig .ig-in small{display:block;margin-top:10px;font-size:14px;opacity:.85}
+.media.kb img{animation:kb 6s var(--ease) infinite alternate}
+@keyframes kb{to{transform:scale(1.14) translate(-3%,-2%)}}
+
+dialog.lb{border:0;padding:0;background:transparent;max-width:min(92vw,1000px);width:100%;margin:auto}
+dialog.lb::backdrop{background:rgba(20,12,10,.82);backdrop-filter:blur(6px)}
+.lb-in{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,.8fr);gap:0;border-radius:26px;overflow:hidden;background:var(--cream)}
+.lb-in img{width:100%;height:100%;max-height:80vh;object-fit:contain;background:#1E1412}
+.lb-copy{padding:34px;display:flex;flex-direction:column;gap:14px;color:var(--espresso)}
+.lb-copy h3{font-size:34px;font-weight:800;letter-spacing:-.01em;line-height:1.05}
+.lb-copy p{line-height:1.55;opacity:.85}
+.lb-close{position:absolute;top:14px;right:14px;width:44px;height:44px;border-radius:50%;border:0;background:var(--cream);color:var(--espresso);font-size:20px;cursor:pointer;z-index:2}
+@media (max-width:720px){.lb-in{grid-template-columns:1fr}.lb-in img{max-height:50vh}}
+
+/* why */
+#why{background:var(--blush)}
+.benefits{display:flex;flex-wrap:wrap;gap:12px;max-width:1280px;margin:0 auto}
+.benefits li{list-style:none;display:flex;align-items:center;gap:12px;font-size:clamp(18px,1.9vw,28px);font-weight:700;letter-spacing:-.01em;padding:16px 24px 16px 16px;border-radius:99px;background:var(--cream);transition:transform .4s var(--spring),background .3s,color .3s}
+.benefits li:hover{transform:translateY(-4px) rotate(-1deg);background:var(--espresso);color:var(--cream)}
+.benefits li .vru-mark{font-size:24px;color:var(--rose)}
+
+#process{background:var(--blush);padding-top:40px}
+.proc-wrap{position:relative;overflow:hidden}
+.proc-track{display:flex;gap:24px;padding:0 clamp(16px,5vw,72px);width:max-content;align-items:flex-end}
+.proc-intro{flex:0 0 min(440px,80vw);align-self:center}
+.proc-intro h2{font-size:clamp(44px,6vw,96px);font-weight:800;font-variation-settings:'wdth' 92;letter-spacing:-.01em;line-height:1.02}
+.proc-intro p{margin-top:16px;font-size:18px;line-height:1.5;opacity:.8}
+.step{flex:0 0 clamp(260px,30vw,400px);min-height:360px;border-radius:30px;padding:30px;background:var(--cream);display:flex;flex-direction:column;justify-content:space-between;transition:background .5s,color .5s,transform .5s var(--spring)}
+.step.on{background:var(--espresso);color:var(--cream);transform:translateY(-14px)}
+.step .n{font-size:96px;font-weight:800;font-variation-settings:'wdth' 92;line-height:.9;letter-spacing:-.01em;color:var(--rose)}
+.step h3{font-size:26px;font-weight:800;letter-spacing:-.01em;line-height:1.05}
+.step p{margin-top:10px;font-size:16px;line-height:1.5;opacity:.8}
+.path{position:relative;height:150px;margin:24px clamp(16px,5vw,72px) 0}
+.path svg.line{position:absolute;left:0;right:0;bottom:22px;width:100%;height:20px}
+.mini{position:absolute;bottom:18px;left:0;height:120px;aspect-ratio:1/2}
+@media (max-width:899px){
+  .proc-track{flex-direction:column;width:auto;align-items:stretch}
+  .step{flex:none;min-height:0;gap:18px}
+  .step .n{font-size:64px}
+  .path{display:none}
+}
+
+/* contact */
+#contact{background:var(--espresso);color:var(--cream);overflow:hidden}
+.contact-grid{display:grid;grid-template-columns:1.05fr 1fr;gap:clamp(32px,5vw,80px);max-width:1280px;margin:0 auto;align-items:start}
+@media (max-width:900px){.contact-grid{grid-template-columns:1fr}}
+.contact-copy h2{font-size:clamp(46px,7vw,116px);font-weight:800;font-variation-settings:'wdth' 92;letter-spacing:-.01em;line-height:1.02}
+.contact-copy h2 .serif{color:var(--blush)}
+.contact-copy p{margin-top:22px;font-size:18px;line-height:1.55;opacity:.85;max-width:42ch}
+.links{display:flex;flex-direction:column;gap:10px;margin-top:30px}
+.links a{display:flex;justify-content:space-between;align-items:center;gap:12px;text-decoration:none;padding:18px 22px;border-radius:20px;background:rgba(247,238,228,.07);font-weight:700;font-size:clamp(15px,1.4vw,19px);transition:background .3s,transform .4s var(--spring);word-break:break-all}
+.links a:hover{background:var(--blush);color:var(--choc);transform:translateX(6px)}
+.contact-char{width:120px;height:240px;margin-top:30px}
+form.inq{background:var(--cream);color:var(--espresso);border-radius:30px;padding:clamp(22px,3vw,38px);display:grid;gap:18px}
+form.inq h3{font-size:26px;font-weight:800;letter-spacing:-.01em}
+.field{display:grid;gap:8px}
+.field label,.field .lbl{font-size:12px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;opacity:.7}
+.field input,.field textarea,.field select{font:inherit;font-size:16px;padding:14px 16px;border-radius:14px;border:2px solid rgba(59,38,34,.15);background:#fff;color:var(--espresso);transition:border-color .25s,box-shadow .25s}
+.field input:focus,.field textarea:focus,.field select:focus{outline:0;border-color:var(--rose);box-shadow:0 0 0 4px rgba(217,139,160,.25)}
+.field textarea{min-height:110px;resize:vertical}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chips button{border:2px solid rgba(59,38,34,.18);background:transparent;color:var(--espresso);padding:9px 14px;border-radius:99px;font-weight:600;font-size:14px;cursor:pointer;transition:all .3s var(--spring)}
+.chips button:hover{transform:translateY(-2px);border-color:var(--espresso)}
+.chips button[aria-pressed=true]{background:var(--espresso);color:var(--cream);border-color:var(--espresso)}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+@media (max-width:520px){.row2{grid-template-columns:1fr}}
+form.inq .btn{justify-self:start;background:var(--espresso);color:var(--cream)}
+form.inq .btn:hover{background:var(--rose);color:var(--choc)}
+footer{background:var(--choc);color:var(--sand);padding:28px clamp(16px,5vw,72px);display:flex;flex-wrap:wrap;justify-content:space-between;gap:12px;font-size:14px}
+footer a{text-decoration:none;opacity:.8}footer a:hover{opacity:1}
+
+.reveal{opacity:0;transform:translateY(40px)}
+@media (prefers-reduced-motion: reduce){
+  .twinkle,.sway,.steam path,.float,.scroll-hint i::after{animation:none}
+  .reveal{opacity:1;transform:none}
+}
+:focus-visible{outline:3px solid var(--rose);outline-offset:3px}
+</style>
+</head>
+<body>
+
+<nav class="nav" aria-label="Main">
+  <a class="brand" href="#world"><i data-mark></i><span>Visuals by Vrushali</span></a>
+  <div class="nav-links">
+    <a href="#create">Formats</a><a href="#work">My work</a><a href="#process">Process</a>
+    <a class="cta magnetic" href="#contact">Book a collab</a>
+  </div>
+</nav>
+
+<!-- ============ THE WORLD ============ -->
+<section id="world" aria-label="Story">
+  <div class="far" aria-hidden="true">
+    <!-- 0 jungle -->
+    <svg class="f" viewBox="0 0 1600 900" preserveAspectRatio="xMidYMax slice">
+      <defs><radialGradient id="mist" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="#5E8F6E" stop-opacity=".55"/><stop offset="1" stop-color="#5E8F6E" stop-opacity="0"/></radialGradient></defs>
+      <ellipse cx="1180" cy="260" rx="520" ry="260" fill="url(#mist)"/>
+      <path d="M0 640 C200 520 380 600 560 540 C760 470 940 600 1140 520 C1320 450 1460 540 1600 500 V900 H0Z" fill="#1E4B3B"/>
+      <g fill="#245744">
+        <path d="M120 640 l40 -220 l40 220z"/><path d="M300 600 l50 -260 l50 260z"/><path d="M1240 560 l46 -250 l46 250z"/><path d="M1440 560 l38 -200 l38 200z"/>
+      </g>
+      <path d="M0 720 C260 650 520 720 800 680 C1080 640 1320 720 1600 680 V900 H0Z" fill="#163A2E"/>
+      <g fill="#E0A84A"><circle class="twinkle" cx="420" cy="380" r="3"/><circle class="twinkle" cx="980" cy="300" r="2.5"/><circle class="twinkle" cx="1320" cy="420" r="3"/><circle class="twinkle" cx="760" cy="460" r="2"/><circle class="twinkle" cx="220" cy="300" r="2.5"/></g>
+    </svg>
+    <!-- 1 studio -->
+    <svg class="f" viewBox="0 0 1600 900" preserveAspectRatio="xMidYMax slice">
+      <defs><radialGradient id="spot" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="#FFF6EA"/><stop offset="1" stop-color="#FFF6EA" stop-opacity="0"/></radialGradient></defs>
+      <rect width="1600" height="900" fill="#E6D3BC"/>
+      <circle cx="1100" cy="380" r="420" fill="url(#spot)"/>
+      <g fill="none" stroke="#D2BA9C" stroke-width="10"><rect x="120" y="120" width="300" height="420" rx="150"/><path d="M270 120 V540 M120 330 H420"/></g>
+      <g fill="#D9C3A8"><rect x="1360" y="0" width="14" height="300"/><rect x="1440" y="0" width="14" height="240"/></g>
+      <g fill="#C9973F"><circle cx="1367" cy="310" r="22"/><circle cx="1447" cy="250" r="22"/></g>
+    </svg>
+    <!-- 2 velvet -->
+    <svg class="f" viewBox="0 0 1600 900" preserveAspectRatio="xMidYMax slice">
+      <defs><linearGradient id="drape" x1="0" x2="1"><stop offset="0" stop-color="#151A3A"/><stop offset=".5" stop-color="#26306A"/><stop offset="1" stop-color="#151A3A"/></linearGradient></defs>
+      <rect width="1600" height="900" fill="#1B2147"/>
+      <g fill="url(#drape)"><path d="M0 0 H200 C180 300 220 600 190 900 H0Z"/><path d="M200 0 H420 C400 300 440 600 410 900 H190Z" opacity=".7"/><path d="M1180 0 H1400 C1380 300 1420 600 1390 900 H1170Z" opacity=".7"/><path d="M1400 0 H1600 V900 H1390 C1420 600 1380 300 1400 0Z"/></g>
+      <path d="M560 0 L1040 0 L1240 900 L360 900Z" fill="#F7EEE4" opacity=".05"/>
+      <g fill="#E0A84A"><path class="twinkle" d="M520 220 l6 18 18 6 -18 6 -6 18 -6 -18 -18 -6 18 -6z"/><path class="twinkle" d="M1120 160 l5 14 14 5 -14 5 -5 14 -5 -14 -14 -5 14 -5z"/><path class="twinkle" d="M880 300 l4 12 12 4 -12 4 -4 12 -4 -12 -12 -4 12 -4z"/><path class="twinkle" d="M300 420 l4 12 12 4 -12 4 -4 12 -4 -12 -12 -4 12 -4z"/></g>
+    </svg>
+    <!-- 3 cafe -->
+    <svg class="f" viewBox="0 0 1600 900" preserveAspectRatio="xMidYMax slice">
+      <rect width="1600" height="900" fill="#E7C3A1"/>
+      <path d="M180 620 V260 a170 170 0 0 1 340 0 V620Z" fill="#F4DCC2"/>
+      <path d="M350 90 V620 M180 400 H520" stroke="#D9AE85" stroke-width="10"/>
+      <rect x="1040" y="330" width="420" height="14" rx="4" fill="#9A6B4C"/>
+      <g fill="#B98863"><rect x="1070" y="270" width="50" height="60" rx="8"/><rect x="1140" y="250" width="40" height="80" rx="8"/><rect x="1200" y="280" width="60" height="50" rx="10"/><rect x="1290" y="240" width="34" height="90" rx="6"/><circle cx="1380" cy="300" r="30"/></g>
+      <g stroke="#6B4535" stroke-width="3"><path d="M760 0 V140 M940 0 V110"/></g>
+      <g fill="#E0A84A"><path d="M720 140 h80 l-14 40 h-52z"/><path d="M900 110 h80 l-14 40 h-52z"/></g>
+      <g fill="#FFE7B8" opacity=".5"><ellipse cx="760" cy="230" rx="90" ry="50"/><ellipse cx="940" cy="200" rx="90" ry="50"/></g>
+    </svg>
+    <!-- 4 frame / blush -->
+    <svg class="f" viewBox="0 0 1600 900" preserveAspectRatio="xMidYMax slice">
+      <rect width="1600" height="900" fill="#EFC9D3"/>
+      <g fill="#E7B3C1"><g class="float" transform="translate(140 120) scale(4)"><circle cx="13" cy="13" r="10"/><circle cx="27" cy="13" r="10"/><circle cx="13" cy="27" r="10"/><circle cx="27" cy="27" r="10"/></g>
+      <g class="float" style="animation-delay:-3s" transform="translate(1380 520) scale(3)"><circle cx="13" cy="13" r="10"/><circle cx="27" cy="13" r="10"/><circle cx="13" cy="27" r="10"/><circle cx="27" cy="27" r="10"/></g>
+      <g class="float" style="animation-delay:-5s" transform="translate(620 80) scale(2)"><circle cx="13" cy="13" r="10"/><circle cx="27" cy="13" r="10"/><circle cx="13" cy="27" r="10"/><circle cx="27" cy="27" r="10"/></g></g>
+    </svg>
+  </div>
+
+  <div class="scene-scale" aria-hidden="true">
+    <div class="groundfill"></div>
+    <div class="strip mid">
+      <!-- 0 jungle -->
+      <div class="panel"><svg viewBox="0 0 1600 900" preserveAspectRatio="xMidYMax meet">
+        <defs>
+          <symbol id="mon" viewBox="0 0 200 220"><path d="M100 215 C100 180 100 150 100 120" stroke="#0F2A22" stroke-width="6" fill="none"/><path d="M100 122 C36 116 4 70 22 30 C40 0 84 -4 104 14 C130 -6 180 6 192 46 C206 92 160 126 100 122Z" fill="currentColor"/><g stroke="#0F2A22" stroke-width="5" stroke-linecap="round"><path d="M100 118 V24"/><path d="M98 80 L36 52"/><path d="M98 96 L44 94"/><path d="M102 76 L170 44"/><path d="M102 96 L166 98"/></g></symbol>
+        </defs>
+        <rect x="-140" y="790" width="1741" height="400" fill="#0F2A22"/>
+        <path d="M-200 800 Q400 760 800 796 T1800 800 V900 H-200Z" fill="#143528"/>
+        <path d="M1080 800 C1070 600 1100 420 1060 220" stroke="#3E2A1E" stroke-width="34" fill="none" stroke-linecap="round"/>
+        <g fill="#2F6B4A"><path d="M1060 230 C980 200 900 230 840 290 C920 260 990 260 1060 240Z"/><path d="M1060 230 C1140 180 1240 200 1300 250 C1220 230 1140 236 1060 240Z"/><path d="M1060 226 C1020 160 960 130 900 130 C970 160 1020 196 1056 236Z"/><path d="M1060 226 C1110 150 1180 120 1250 126 C1180 150 1110 196 1064 236Z"/></g>
+        <g class="sway"><path d="M880 0 C890 120 870 220 900 320" stroke="#2F6B4A" stroke-width="6" fill="none"/>
+          <g transform="translate(866 250)"><rect width="68" height="110" rx="6" fill="#1E1412"/><g fill="#F7EEE4"><rect x="6" y="8" width="8" height="8" rx="2"/><rect x="6" y="28" width="8" height="8" rx="2"/><rect x="6" y="48" width="8" height="8" rx="2"/><rect x="6" y="68" width="8" height="8" rx="2"/><rect x="6" y="88" width="8" height="8" rx="2"/><rect x="54" y="8" width="8" height="8" rx="2"/><rect x="54" y="28" width="8" height="8" rx="2"/><rect x="54" y="48" width="8" height="8" rx="2"/><rect x="54" y="68" width="8" height="8" rx="2"/><rect x="54" y="88" width="8" height="8" rx="2"/></g><rect x="20" y="10" width="28" height="40" rx="3" fill="#D98BA0"/><rect x="20" y="58" width="28" height="40" rx="3" fill="#E0A84A"/></g></g>
+        <use href="#mon" x="1180" y="560" width="260" height="260" color="#3F8A5C" transform="rotate(8 1310 690)"/>
+        <use href="#mon" x="760" y="590" width="220" height="220" color="#2F6B4A" transform="rotate(-14 870 700)"/>
+        <use href="#mon" x="1380" y="620" width="200" height="200" color="#4F7A45"/>
+        <g transform="translate(1000 640)"><circle r="44" fill="#E46F86"/><g fill="#D98BA0"><circle cx="-34" cy="-20" r="30"/><circle cx="34" cy="-20" r="30"/><circle cx="-22" cy="30" r="30"/><circle cx="22" cy="30" r="30"/><circle cy="-40" r="30"/></g><circle r="16" fill="#E0A84A"/><path d="M0 50 V160" stroke="#2F6B4A" stroke-width="8"/></g>
+        <g fill="#E0A84A"><circle class="twinkle" cx="960" cy="420" r="5"/><circle class="twinkle" cx="1220" cy="360" r="4"/><circle class="twinkle" cx="1420" cy="460" r="5"/><circle class="twinkle" cx="700" cy="500" r="4"/></g>
+      </svg></div>
+      <!-- 1 studio -->
+      <div class="panel"><svg viewBox="0 0 1600 900" preserveAspectRatio="xMidYMax meet">
+        <rect x="-140" y="790" width="1741" height="400" fill="#C9AE8E"/>
+        <path d="M880 150 H1480 V720 Q1480 800 1560 800 H800 Q880 800 880 720Z" fill="#EFC9D3"/>
+        <rect x="860" y="130" width="640" height="26" rx="13" fill="#3B2622"/>
+        <g transform="translate(720 0)"><path d="M0 800 L40 420 M40 420 L80 800 M40 420 L40 800" stroke="#3B2622" stroke-width="8" fill="none"/><g transform="rotate(-18 40 360)"><path d="M-60 260 H140 L110 420 H-30Z" fill="#F7EEE4" stroke="#3B2622" stroke-width="8"/><path d="M-30 420 H110" stroke="#E0A84A" stroke-width="10"/></g></g>
+        <path d="M640 420 L1060 820" stroke="#FFF6EA" stroke-width="160" opacity=".25"/>
+        <g transform="translate(1110 520)"><rect x="-90" y="120" width="180" height="160" rx="10" fill="#F7EEE4"/><ellipse cx="0" cy="120" rx="90" ry="16" fill="#fff"/><rect x="-28" y="20" width="56" height="94" rx="12" fill="#E0A84A" opacity=".85"/><rect x="-14" y="-6" width="28" height="28" rx="6" fill="#2A1C18"/><rect x="-18" y="44" width="36" height="40" rx="4" fill="#F7EEE4" opacity=".7"/></g>
+        <g transform="translate(1340 560)"><path d="M0 240 L30 0 M90 240 L60 0 M10 160 H80" stroke="#3B2622" stroke-width="8"/><rect x="-14" y="-10" width="118" height="40" rx="8" fill="#3B2622"/><rect x="-10" y="40" width="110" height="80" rx="8" fill="#D98BA0"/><text x="45" y="96" text-anchor="middle" font-family="Instrument Serif" font-style="italic" font-size="52" fill="#3B2622">V</text></g>
+      </svg></div>
+      <!-- 2 velvet -->
+      <div class="panel"><svg viewBox="0 0 1600 900" preserveAspectRatio="xMidYMax meet">
+        <rect x="-140" y="790" width="1741" height="400" fill="#10142E"/>
+        <path d="M900 0 L1260 0 L1420 800 L740 800Z" fill="#F7EEE4" opacity=".08"/>
+        <g transform="translate(1080 360)">
+          <rect x="-130" y="300" width="260" height="140" rx="6" fill="#26306A"/><rect x="-150" y="290" width="300" height="20" rx="4" fill="#C9973F"/>
+          <path d="M-90 300 C-110 200 -100 120 -50 80 C-30 40 -26 -10 -30 -60 H30 C26 -10 30 40 50 80 C100 120 110 200 90 300Z" fill="#123B30"/>
+          <path d="M-60 90 Q0 190 60 90" fill="none" stroke="#E0A84A" stroke-width="8" stroke-linecap="round"/>
+          <g fill="#E0A84A"><circle cx="-52" cy="104" r="7"/><circle cx="-38" cy="130" r="7"/><circle cx="-20" cy="148" r="7"/><circle cx="20" cy="148" r="7"/><circle cx="38" cy="130" r="7"/><circle cx="52" cy="104" r="7"/></g>
+          <g fill="#2FA37A" stroke="#E0A84A" stroke-width="3"><path d="M-40 140 l9 18 -9 18 -9 -18z"/><path d="M0 162 l12 24 -12 24 -12 -24z"/><path d="M40 140 l9 18 -9 18 -9 -18z"/></g>
+          <g fill="#FFF6EA"><path class="twinkle" d="M70 40 l5 15 15 5 -15 5 -5 15 -5 -15 -15 -5 15 -5z"/><path class="twinkle" d="M-110 170 l4 12 12 4 -12 4 -4 12 -4 -12 -12 -4 12 -4z"/><path class="twinkle" d="M20 230 l4 12 12 4 -12 4 -4 12 -4 -12 -12 -4 12 -4z"/></g>
+        </g>
+        <g transform="translate(1340 700)"><rect x="-50" y="0" width="100" height="100" rx="10" fill="#7E2E3C"/><rect x="-50" y="-10" width="100" height="26" rx="8" fill="#A13E50"/><path d="M0 -10 V100" stroke="#E0A84A" stroke-width="8"/><path d="M0 -12 C-30 -40 -40 -10 0 -12 C40 -10 30 -40 0 -12" fill="#E0A84A"/></g>
+        <g transform="translate(830 720)"><circle r="40" fill="#E0A84A"/><circle r="28" fill="#C9973F"/><circle r="12" fill="#B3263F"/><g fill="#F3C46B"><circle cx="0" cy="-34" r="5"/><circle cx="24" cy="-24" r="5"/><circle cx="34" cy="0" r="5"/><circle cx="24" cy="24" r="5"/><circle cx="0" cy="34" r="5"/><circle cx="-24" cy="24" r="5"/><circle cx="-34" cy="0" r="5"/><circle cx="-24" cy="-24" r="5"/></g></g>
+      </svg></div>
+      <!-- 3 cafe -->
+      <div class="panel"><svg viewBox="0 0 1600 900" preserveAspectRatio="xMidYMax meet">
+        <rect x="-140" y="790" width="1741" height="400" fill="#8A5E44"/>
+        <path d="M-200 800 H1800" stroke="#6B4535" stroke-width="6"/>
+        <rect x="760" y="600" width="720" height="26" rx="10" fill="#5A3A30"/>
+        <path d="M800 626 L780 800 M1440 626 L1460 800" stroke="#5A3A30" stroke-width="16"/>
+        <g transform="translate(880 540)"><ellipse cx="0" cy="56" rx="90" ry="12" fill="#3B2622" opacity=".25"/><path d="M-80 0 H80 C80 50 50 64 0 64 C-50 64 -80 50 -80 0Z" fill="#F7EEE4"/><ellipse cx="0" cy="0" rx="80" ry="16" fill="#5A2F22"/><path d="M-40 -2 C-20 -20 20 6 30 -10" stroke="#7A4433" stroke-width="6" fill="none" stroke-linecap="round"/><g class="steam" stroke="#FFF6EA" stroke-width="6" fill="none" stroke-linecap="round" opacity=".8"><path d="M-30 -20 C-50 -60 -10 -80 -30 -130"/><path d="M10 -24 C-10 -70 30 -90 10 -150"/></g></g>
+        <g transform="translate(1110 500)"><rect x="-80" y="20" width="160" height="80" rx="12" fill="#D9B27A"/><path d="M-80 46 H80 M-80 72 H80" stroke="#B8894F" stroke-width="5"/><ellipse cx="0" cy="20" rx="80" ry="14" fill="#E9C78E"/><g fill="#FBF1E2" stroke="#E2CFAE" stroke-width="3"><path d="M-54 18 C-54 -10 -14 -10 -14 18Z"/><path d="M-8 18 C-8 -14 32 -14 32 18Z"/><path d="M30 18 C30 -6 62 -6 62 18Z"/></g><g class="steam" stroke="#FFF6EA" stroke-width="6" fill="none" stroke-linecap="round" opacity=".8"><path d="M-30 -20 C-50 -60 -10 -80 -30 -130"/><path d="M20 -20 C0 -70 40 -90 20 -150"/></g><path d="M100 -60 L150 90 M118 -66 L160 86" stroke="#B8894F" stroke-width="6" stroke-linecap="round"/></g>
+        <g transform="translate(1320 470)"><rect x="-24" y="40" width="48" height="90" rx="10" fill="#E0A84A" opacity=".9"/><rect x="-12" y="14" width="24" height="28" rx="5" fill="#2A1C18"/><rect x="-16" y="66" width="32" height="34" rx="3" fill="#FFF6EA" opacity=".75"/></g>
+        <g transform="translate(1420 400)"><path d="M-40 200 H40 L30 120 H-30Z" fill="#D98BA0"/><g fill="#4F7A45"><path d="M0 120 C-60 80 -70 20 -50 -10 C-30 40 -10 70 0 120Z"/><path d="M0 120 C60 70 70 10 40 -20 C30 30 14 70 0 120Z"/><path d="M0 120 C-10 60 0 10 20 -30 C20 20 10 70 0 120Z"/></g></g>
+      </svg></div>
+      <!-- 4 frame -->
+      <div class="panel"><svg viewBox="0 0 1600 900" preserveAspectRatio="xMidYMax meet">
+        <defs><clipPath id="phoneclip"><rect x="0" y="0" width="330" height="586" rx="36"/></clipPath></defs>
+        <rect x="-140" y="790" width="1741" height="400" fill="#D98BA0"/>
+        <g transform="translate(940 170)">
+          <rect x="-16" y="-16" width="362" height="618" rx="50" fill="#2A1C18"/>
+          <g clip-path="url(#phoneclip)"><image href="assets/ugc-fragrance.jpg" width="330" height="586" preserveAspectRatio="xMinYMid slice"/></g>
+          <rect x="24" y="24" width="72" height="28" rx="14" fill="#E0465A"/><text x="60" y="44" text-anchor="middle" font-family="Bricolage Grotesque" font-weight="800" font-size="15" fill="#fff">● REC</text>
+          <rect x="122" y="-4" width="86" height="10" rx="5" fill="#000"/>
+        </g>
+        <g fill="#3B2622"><g class="float" transform="translate(1340 300) scale(2.4)"><circle cx="13" cy="13" r="10"/><circle cx="27" cy="13" r="10"/><circle cx="13" cy="27" r="10"/><circle cx="27" cy="27" r="10"/></g></g>
+        <path d="M1380 520 c40 -30 90 -10 90 30" stroke="#3B2622" stroke-width="6" fill="none" stroke-dasharray="4 12" stroke-linecap="round"/>
+      </svg></div>
+    </div>
+
+    <div class="strip near" aria-hidden="true">
+      <svg width="0" height="0" style="position:absolute"><defs><symbol id="leafy" viewBox="0 0 300 260"><g fill="currentColor"><path d="M150 260 C120 200 40 180 0 120 C70 130 120 170 150 240Z"/><path d="M150 260 C140 170 100 80 30 30 C110 60 160 140 160 240Z"/><path d="M150 260 C170 170 220 90 300 60 C240 120 190 180 166 250Z"/><path d="M150 260 C190 210 250 200 300 190 C260 230 200 250 160 260Z"/></g></symbol></defs></svg>
+      <div class="leafy" style="left:-4vw;color:#0B211A"><svg viewBox="0 0 300 260"><use href="#leafy"/></svg></div>
+      <div class="leafy" style="left:72vw;color:#0E2A21;transform:scaleX(-1)"><svg viewBox="0 0 300 260"><use href="#leafy"/></svg></div>
+      <div class="leafy" style="left:180vw;color:#A88B6C;width:18vw"><svg viewBox="0 0 300 260"><use href="#leafy"/></svg></div>
+      <div class="leafy" style="left:310vw;color:#0A0E22"><svg viewBox="0 0 300 260"><use href="#leafy"/></svg></div>
+      <div class="leafy" style="left:440vw;color:#5E7F4A;transform:scaleX(-1)"><svg viewBox="0 0 300 260"><use href="#leafy"/></svg></div>
+      <div class="leafy" style="left:560vw;color:#C2788C"><svg viewBox="0 0 300 260"><use href="#leafy"/></svg></div>
+    </div>
+  </div>
+
+  <div class="char vru-idle" id="char"><div class="inner" data-vru></div><span class="tag" id="charTag">Scene 01 · The spark</span></div>
+
+  <div class="chapters">
+    <article class="chapter" data-tag="Scene 01 · The spark">
+      <div class="eyebrow">AI video ad creator</div>
+      <h1><span class="mask"><span>Visuals</span></span> <span class="mask"><span class="serif">by</span></span><br><span class="mask"><span>Vrushali</span></span></h1>
+      <p class="hero-p">Transforming product images and creative concepts into visual stories that stop the scroll. No physical shoot required.</p>
+      <div class="ctas hero-ctas">
+        <a class="btn btn-solid magnetic" href="#work">Explore the work <span class="arr">→</span></a>
+        <a class="btn btn-ghost magnetic" href="#contact">Book a collaboration</a>
+      </div>
+    </article>
+    <article class="chapter" data-tag="Scene 02 · The studio">
+      <div class="eyebrow">About me</div>
+      <h2>Hello, I'm <span class="serif">Vrushali!</span></h2>
+      <p>I'm an AI video creator who loves visual storytelling, creative concepts and digital advertising. I take product photographs and ideas and turn them into imaginative, cinematic video ads that help brands stand out online.</p>
+    </article>
+    <article class="chapter" data-tag="Scene 03 · Velvet & gold">
+      <div class="eyebrow">Luxury commercials</div>
+      <h2>Gold, emerald &amp; <span class="serif">diamonds.</span> No set needed.</h2>
+      <p>Elegant jewellery and accessory films with velvet light, slow close-ups and that perfect sparkle, created entirely with AI.</p>
+    </article>
+    <article class="chapter" data-tag="Scene 04 · Everyday cinema">
+      <div class="eyebrow">Lifestyle &amp; festive</div>
+      <h2>Rich chocolate, rising steam, <span class="serif">everyday life.</span></h2>
+      <p>Indulgent food, cosy lifestyle scenes and festive campaigns that make your product part of your customer's day.</p>
+    </article>
+    <article class="chapter" data-tag="Scene 05 · Action!">
+      <div class="eyebrow">Your turn</div>
+      <h2>Let's turn your products into <span class="serif">visual experiences.</span></h2>
+      <div class="ctas"><a class="btn btn-solid magnetic" href="#contact" style="background:var(--espresso);color:var(--cream)">Start a project <span class="arr">→</span></a><a class="btn btn-ghost magnetic" href="#create">See what I make</a></div>
+    </article>
+  </div>
+
+  <div class="journey" role="tablist" aria-label="Story chapters">
+    <button data-i="0" data-n="1" aria-current="true"><span>Spark</span></button>
+    <button data-i="1" data-n="2"><span>Studio</span></button>
+    <button data-i="2" data-n="3"><span>Velvet</span></button>
+    <button data-i="3" data-n="4"><span>Café</span></button>
+    <button data-i="4" data-n="5"><span>Action</span></button>
+  </div>
+  <div class="scroll-hint">Scroll to wander <i></i></div>
+</section>
+
+<!-- ============ WHAT I CREATE ============ -->
+<section class="s" id="create">
+  <div class="s-head">
+    <div class="kicker"><i data-mark></i> What I create</div>
+    <h2>Six ways to make<br>your product <span class="serif">move.</span></h2>
+    <p>Pick a format, or mix a few. Every video is concepted around your product, your audience and where it'll live.</p>
+  </div>
+  <div class="wrap cards">
+    <article class="card reveal"><div><span class="num">01</span>
+      <svg class="ico" viewBox="0 0 84 84" fill="none" stroke="#3B2622" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><rect x="20" y="22" width="44" height="50" rx="8" fill="#E0A84A"/><path d="M32 22v-6h20v6"/><path d="M8 40l8 4M76 40l-8 4M42 6v6"/></svg>
+      <h3>Product showcase</h3><p>Highlighting features and benefits with clean, confident motion.</p></div><span class="pill">Features &amp; benefits</span></article>
+    <article class="card reveal"><div><span class="num">02</span>
+      <svg class="ico" viewBox="0 0 84 84" fill="none" stroke="#3B2622" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 38h60v34H12z" fill="#F7EEE4"/><path d="M12 38l10-16h40l10 16"/><path d="M42 38v34" stroke="#D98BA0" stroke-width="6"/><path d="M30 14l4 6M54 14l-4 6M42 8v8"/></svg>
+      <h3>Unboxing</h3><p>The reveal, the ribbon, the first look. Building excitement around a product.</p></div><span class="pill">Build anticipation</span></article>
+    <article class="card reveal"><div><span class="num">03</span>
+      <svg class="ico" viewBox="0 0 84 84" fill="none" stroke="#3B2622" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="42" cy="42" r="26" fill="#2FA37A"/><circle cx="42" cy="42" r="12" fill="#F7EEE4"/><path d="M42 4v8M42 72v8M4 42h8M72 42h8"/></svg>
+      <h3>Aesthetic</h3><p>Beautiful visuals, slow close-ups and seamless transitions.</p></div><span class="pill">Cinematic</span></article>
+    <article class="card reveal"><div><span class="num">04</span>
+      <svg class="ico" viewBox="0 0 84 84" fill="none" stroke="#3B2622" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><rect x="30" y="8" width="24" height="42" rx="12" fill="#D98BA0"/><path d="M18 40a24 24 0 0 0 48 0M42 64v12M30 76h24"/></svg>
+      <h3>Voiceover</h3><p>Explaining products through engaging, story-led narration.</p></div><span class="pill">Storytelling</span></article>
+    <article class="card reveal"><div><span class="num">05</span>
+      <svg class="ico" viewBox="0 0 84 84" fill="none" stroke="#3B2622" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 60c0-16 10-24 22-24" /><circle cx="22" cy="24" r="12" fill="#F7EEE4"/><path d="M18 22l8 4M26 20l-8 6"/><path d="M48 40h22l-6-6M70 40l-6 6"/><circle cx="62" cy="64" r="12" fill="#E0A84A"/><path d="M56 64l4 4 8-8"/></svg>
+      <h3>Problem → solution</h3><p>Showing exactly how your product solves a customer's problem.</p></div><span class="pill">Converts</span></article>
+    <article class="card reveal"><div><span class="num">06</span>
+      <svg class="ico" viewBox="0 0 84 84" fill="none" stroke="#3B2622" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 70V36l30-22 30 22v34z" fill="#F7EEE4"/><path d="M34 70V50h16v20"/><path d="M58 30c6-8 14-6 14-6s0 8-8 12" fill="#4F7A45"/></svg>
+      <h3>Lifestyle</h3><p>Your product in everyday life, exactly where your customer pictures it.</p></div><span class="pill">Relatable</span></article>
+  </div>
+</section>
+
+<!-- ============ WORK ============ -->
+<section class="s" id="work">
+  <div class="s-head">
+    <div class="kicker"><i data-mark></i> My work</div>
+    <h2>Selected <span class="serif">projects.</span></h2>
+    <p>Hover over a frame to preview it, or tap it to read about the project. Switch the format to see each campaign as a Reel, a widescreen ad or a feed post.</p>
+  </div>
+  <div class="wrap">
+    <div class="controls">
+      <div class="seg" role="group" aria-label="Filter by category">
+        <button aria-pressed="true" data-filter="all">All</button>
+        <button aria-pressed="false" data-filter="luxury">Luxury jewellery</button>
+        <button aria-pressed="false" data-filter="food">Food &amp; indulgence</button>
+        <button aria-pressed="false" data-filter="ugc">UGC &amp; Reels</button>
+      </div>
+      <div class="seg" role="group" aria-label="Aspect ratio">
+        <button aria-pressed="true" data-ar="9/16">9:16 Reels</button>
+        <button aria-pressed="false" data-ar="16/9">16:9 Wide</button>
+        <button aria-pressed="false" data-ar="1/1">1:1 Feed</button>
+      </div>
+    </div>
+    <div class="grid" data-ar="9/16" id="grid">
+      <figure class="item" data-cat="luxury" data-title="Emerald necklace on velvet" data-desc="A slow, glinting reveal of a diamond-and-emerald necklace on deep navy velvet. Built from a single product photograph." data-img="assets/jewel-necklace.jpg">
+        <div class="media" data-video="" data-tolerance="1.25"><img src="assets/jewel-necklace.jpg" alt="Diamond and emerald necklace on navy velvet" loading="lazy"></div>
+        <figcaption><h3>Emerald necklace</h3><div class="tags"><span>Luxury</span><span>Aesthetic</span></div></figcaption></figure>
+      <figure class="item" data-cat="luxury" data-title="Statement earrings" data-desc="Model close-up with leaf-cut emerald earrings, soft studio light and a gentle head turn for the sparkle." data-img="assets/jewel-earring.jpg">
+        <div class="media" data-video="" data-fit="cover" data-focus="70% 50%"><img src="assets/jewel-earring.jpg" alt="Model wearing emerald drop earrings" loading="lazy"></div>
+        <figcaption><h3>Statement earrings</h3><div class="tags"><span>Luxury</span><span>Lifestyle</span></div></figcaption></figure>
+      <figure class="item" data-cat="luxury" data-title="Festive gold studs" data-desc="Ruby-centred gold studs against marigold and maroon. A festive campaign concept for a heritage jeweller." data-img="assets/jewel-gold.jpg">
+        <div class="media" data-video="" data-tolerance="1.25"><img src="assets/jewel-gold.jpg" alt="Gold studs with ruby centre beside marigold flowers" loading="lazy"></div>
+        <figcaption><h3>Festive gold</h3><div class="tags"><span>Festive</span><span>Showcase</span></div></figcaption></figure>
+      <figure class="item" data-cat="food" data-title="Molten chocolate" data-desc="Rich chocolate swirl, cocoa dust and curling steam. Pure indulgence in macro." data-img="assets/food-chocolate.jpg">
+        <div class="media" data-video=""><img src="assets/food-chocolate.jpg" alt="Swirl of rich chocolate with steam on slate" loading="lazy"></div>
+        <figcaption><h3>Molten chocolate</h3><div class="tags"><span>Food</span><span>Aesthetic</span></div></figcaption></figure>
+      <figure class="item" data-cat="food" data-title="Dim sum dip" data-desc="Editorial food moment: chopsticks, a dumpling and chilli oil in a slow-motion dip." data-img="assets/food-dimsum.jpg">
+        <div class="media" data-video=""><img src="assets/food-dimsum.jpg" alt="Dumpling held by chopsticks over chilli sauce" loading="lazy"></div>
+        <figcaption><h3>Dim sum dip</h3><div class="tags"><span>Food</span><span>Editorial</span></div></figcaption></figure>
+      <figure class="item" data-cat="ugc" data-title="Azalea fragrance, UGC style" data-desc="A faceless-brand, creator-style fragrance review. Warm home light, natural delivery, made for Reels." data-img="assets/ugc-fragrance.jpg">
+        <div class="media" data-video="" data-focus="26% 40%"><img src="assets/ugc-fragrance.jpg" alt="Woman holding a perfume bottle, creator style" loading="lazy"></div>
+        <figcaption><h3>Fragrance UGC</h3><div class="tags"><span>UGC</span><span>Voiceover</span></div></figcaption></figure>
+      <figure class="item item-ig" data-cat="ugc">
+        <a class="media" data-badge="off" href="https://www.instagram.com/sheclickssuccessforever" target="_blank" rel="noopener" style="cursor:pointer"><div class="ig-in"><b>More Reels<br>on Instagram</b><small>@sheclickssuccessforever ↗</small></div></a>
+        <figcaption><h3>Latest Reels</h3><div class="tags"><span>Instagram</span></div></figcaption></figure>
+    </div>
+  </div>
+</section>
+
+<dialog class="lb" id="lb" aria-label="Project detail">
+  <button class="lb-close" aria-label="Close">✕</button>
+  <div class="lb-in"><img alt=""><div class="lb-copy"><div class="kicker"><i data-mark></i> <span class="lb-cat"></span></div><h3></h3><p></p><a class="btn btn-ghost" href="#contact" style="align-self:flex-start">I want one like this →</a></div></div>
+</dialog>
+
+<!-- ============ WHY ============ -->
+<section class="s" id="why" style="padding-bottom:40px">
+  <div class="s-head">
+    <div class="kicker"><i data-mark></i> Why work with me</div>
+    <h2>Creative possibilities, <span class="serif">without</span> the shoot.</h2>
+  </div>
+  <ul class="benefits">
+    <li class="reveal"><i data-mark></i>AI-powered video production</li>
+    <li class="reveal"><i data-mark></i>Product-focused storytelling</li>
+    <li class="reveal"><i data-mark></i>Faceless advertising content</li>
+    <li class="reveal"><i data-mark></i>Multiple styles &amp; concepts</li>
+    <li class="reveal"><i data-mark></i>Built for Reels &amp; digital ads</li>
+    <li class="reveal"><i data-mark></i>Flexible, brand-aligned concepts</li>
+  </ul>
+</section>
+
+<section id="process" aria-label="My process">
+  <div class="proc-wrap">
+    <div class="proc-track" id="track">
+      <div class="proc-intro"><div class="kicker"><i data-mark></i> My process</div><h2>Five steps from photo to <span class="serif">final cut.</span></h2><p>A simple, collaborative process from brief to delivery.</p></div>
+      <article class="step"><span class="n">01</span><div><h3>You share</h3><p>Brand shares product images and campaign requirements.</p></div></article>
+      <article class="step"><span class="n">02</span><div><h3>Concept</h3><p>I develop a creative concept, covering the mood, story, scenes and format.</p></div></article>
+      <article class="step"><span class="n">03</span><div><h3>Create</h3><p>I create the AI-generated video.</p></div></article>
+      <article class="step"><span class="n">04</span><div><h3>Review</h3><p>We review the video together and make the agreed revisions.</p></div></article>
+      <article class="step"><span class="n">05</span><div><h3>Deliver</h3><p>Final approved video, delivered in the agreed format.</p></div></article>
+      <div style="flex:0 0 8vw" aria-hidden="true"></div>
+    </div>
+    <div class="path" aria-hidden="true">
+      <svg class="line" preserveAspectRatio="none" viewBox="0 0 100 20"><path d="M0 10 H100" stroke="#3B2622" stroke-width="2" stroke-dasharray="1 3" vector-effect="non-scaling-stroke" fill="none"/><path id="pathFill" d="M0 10 H100" stroke="#3B2622" stroke-width="4" vector-effect="non-scaling-stroke" fill="none" pathLength="100" stroke-dasharray="100" stroke-dashoffset="100"/></svg>
+      <div class="mini vru-idle" id="mini"><div class="inner" data-vru style="height:100%"></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ CONTACT ============ -->
+<section class="s" id="contact">
+  <div class="contact-grid">
+    <div class="contact-copy">
+      <div class="kicker" style="color:var(--blush)"><i data-mark></i> Let's work together</div>
+      <h2 style="margin-top:18px">Your product.<br>Our creativity.<br><span class="serif">Our visual story.</span></h2>
+      <p>Looking for creative AI video ads for your brand? Let's collaborate and bring your product ideas to life. Available for brand collaborations and creative projects.</p>
+      <div class="links">
+        <a href="mailto:vrushaliwagle2@gmail.com">vrushaliwagle2@gmail.com <span>↗</span></a>
+        <a href="https://www.instagram.com/sheclickssuccessforever" target="_blank" rel="noopener">@sheclickssuccessforever <span>↗</span></a>
+      </div>
+      <div class="contact-char vru-idle" data-vru></div>
+    </div>
+    <form class="inq reveal" id="inq" novalidate>
+      <h3>Project inquiry</h3>
+      <div class="row2">
+        <div class="field"><label for="f-brand">Brand name</label><input id="f-brand" name="brand" autocomplete="organization" placeholder="e.g. Azalea Perfumes"></div>
+        <div class="field"><label for="f-product">Product type</label><input id="f-product" name="product" placeholder="Jewellery, skincare, food…"></div>
+      </div>
+      <div class="field"><span class="lbl" id="fmt-l">Video format / style</span>
+        <div class="chips" role="group" aria-labelledby="fmt-l">
+          <button type="button" data-chip="Product showcase">Showcase</button><button type="button" data-chip="Unboxing">Unboxing</button><button type="button" data-chip="Aesthetic">Aesthetic</button><button type="button" data-chip="Voiceover">Voiceover</button><button type="button" data-chip="Problem-solution">Problem → solution</button><button type="button" data-chip="Lifestyle">Lifestyle</button>
+        </div></div>
+      <div class="field"><label for="f-aspect">Where will it run?</label><select id="f-aspect" name="aspect"><option>Instagram Reels (9:16)</option><option>Widescreen ad (16:9)</option><option>Feed post (1:1)</option><option>Not sure yet</option></select></div>
+      <div class="field"><label for="f-brief">Campaign brief</label><textarea id="f-brief" name="brief" placeholder="Tell me about the product, the mood and your launch date."></textarea></div>
+      <button class="btn magnetic" type="submit">Send the brief <span class="arr">→</span></button>
+    </form>
+  </div>
+</section>
+<footer><span>© Visuals by Vrushali · AI Video Ad Creator</span><span><a href="https://www.instagram.com/sheclickssuccessforever" target="_blank" rel="noopener">Instagram</a> · <a href="mailto:vrushaliwagle2@gmail.com">Email</a></span></footer>
+
+<script src="assets/vrushali-kit.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/Flip.min.js"></script>
+<script src="https://unpkg.com/lenis@1.1.13/dist/lenis.min.js"></script>
+<script>
+(() => {
+  VRU.mountCharacters();
+  VRU.initMedia();
+  VRU.initForm(document.getElementById('inq'));
+  const reduce = VRU.reduce;
+  if (!window.gsap) { document.querySelectorAll('.reveal').forEach(e => { e.style.opacity = 1; e.style.transform = 'none'; }); return; }
+  gsap.registerPlugin(ScrollTrigger, Flip);
+  const lenis = VRU.initLenis();
+  VRU.initMagnetic();
+
+  /* ---------- the world ---------- */
+  const world = document.getElementById('world');
+  const char = document.getElementById('char');
+  const tagEl = document.getElementById('charTag');
+  const fars = gsap.utils.toArray('.far .f');
+  const chapters = gsap.utils.toArray('.chapter');
+  const dots = gsap.utils.toArray('.journey button');
+  const SC = [
+    { sky: '#173C31', ink: '#F7EEE4', ground: '#0F2A22' },
+    { sky: '#E6D3BC', ink: '#3B2622', ground: '#C9AE8E' },
+    { sky: '#1B2147', ink: '#F7EEE4', ground: '#10142E' },
+    { sky: '#E7C3A1', ink: '#3B2622', ground: '#8A5E44' },
+    { sky: '#EFC9D3', ink: '#3B2622', ground: '#D98BA0' },
+  ];
+  const N = SC.length - 1;
+  let walkT, cur = 0;
+  const setChapter = (i) => {
+    if (i === cur) return; cur = i;
+    dots.forEach((d, k) => d.setAttribute('aria-current', k === i ? 'true' : 'false'));
+    tagEl.textContent = chapters[i].dataset.tag;
+    gsap.fromTo(tagEl, { scale: .6, opacity: 0 }, { scale: 1, opacity: 1, duration: .5, ease: 'back.out(2.5)' });
+  };
+
+  const tl = gsap.timeline({
+    defaults: { ease: 'none' },
+    scrollTrigger: {
+      trigger: world, start: 'top top', end: () => '+=' + innerHeight * N * 1.1,
+      pin: true, scrub: reduce ? true : 0.9, invalidateOnRefresh: true,
+      snap: reduce ? false : { snapTo: 'labelsDirectional', duration: { min: .35, max: .9 }, delay: .08, ease: 'power2.inOut' },
+      onUpdate(self) {
+        setChapter(Math.round(self.progress * N));
+        if (reduce) return;
+        char.classList.add('walking'); char.classList.remove('vru-idle');
+        char.classList.toggle('back', self.direction < 0);
+        clearTimeout(walkT);
+        walkT = setTimeout(() => { char.classList.remove('walking'); char.classList.add('vru-idle'); }, 160);
+      }
+    }
+  });
+  tl.addLabel('c0', 0);
+  tl.to('.mid', { x: () => -N * innerWidth, duration: N }, 0);
+  tl.to('.near', { x: () => -N * innerWidth * 1.35, duration: N }, 0);
+  for (let i = 1; i <= N; i++) {
+    const t = i - .75;
+    tl.to(world, { '--sky': SC[i].sky, '--ink': SC[i].ink, '--ground': SC[i].ground, duration: .5 }, t)
+      .to(fars[i - 1], { opacity: 0, xPercent: -3, duration: .5 }, t)
+      .fromTo(fars[i], { opacity: 0, xPercent: 3 }, { opacity: 1, xPercent: 0, duration: .5 }, t)
+      .to(chapters[i - 1], { autoAlpha: 0, y: -50, duration: .3, ease: 'power2.in' }, t - .05)
+      .fromTo(chapters[i], { autoAlpha: 0, y: 60 }, { autoAlpha: 1, y: 0, duration: .35, ease: 'power3.out' }, i - .4)
+      .addLabel('c' + i, i);
+  }
+  dots.forEach((d, i) => d.addEventListener('click', () => {
+    const st = tl.scrollTrigger, y = st.start + (st.end - st.start) * i / N;
+    lenis ? lenis.scrollTo(y, { duration: 1.6 }) : window.scrollTo({ top: y, behavior: reduce ? 'auto' : 'smooth' });
+  }));
+
+  // pointer depth in the world
+  if (!reduce && matchMedia('(hover: hover)').matches) {
+    world.addEventListener('pointermove', (e) => {
+      const nx = e.clientX / innerWidth - .5, ny = e.clientY / innerHeight - .5;
+      gsap.to('.far', { x: nx * -24, y: ny * -12, duration: 1.2, ease: 'power3.out' });
+      gsap.to('.chapters', { x: nx * 10, y: ny * 6, duration: 1.2, ease: 'power3.out' });
+    });
+  }
+
+  /* ---------- entrance ---------- */
+  if (!reduce) {
+    const intro = gsap.timeline({ defaults: { ease: 'expo.out' } });
+    intro.from('.far .f:first-child', { scale: 1.15, opacity: 0, duration: 1.6 }, 0)
+      .from('.chapter:first-child .eyebrow', { y: 20, opacity: 0, duration: .9 }, .2)
+      .from('.chapter:first-child .mask>span', { yPercent: 115, rotate: 4, duration: 1.2, stagger: .09 }, .25)
+      .from('.hero-p', { y: 24, opacity: 0, duration: 1 }, .6)
+      .from('.hero-ctas > *', { y: 24, opacity: 0, scale: .9, duration: .9, stagger: .08, ease: 'back.out(1.8)' }, .75)
+      .from('.mid .panel:first-child svg', { y: 80, opacity: 0, duration: 1.4 }, .1)
+      .from('.near .leafy:nth-child(-n+3)', { y: 160, rotate: -10, duration: 1.6 }, .2)
+      .from(char, { x: -260, opacity: 0, duration: 1.6, ease: 'power2.out', onStart: () => char.classList.add('walking'), onComplete: () => char.classList.remove('walking') }, .3)
+      .from('#charTag', { scale: 0, opacity: 0, duration: .6, ease: 'back.out(2.5)' }, 1.5)
+      .from('.journey, .scroll-hint, .nav', { y: 30, opacity: 0, duration: .9, stagger: .06 }, .9);
+  }
+
+  /* ---------- cards: reveal + tilt ---------- */
+  ScrollTrigger.batch('.reveal', {
+    start: 'top 88%',
+    onEnter: (els) => gsap.to(els, { opacity: 1, y: 0, duration: reduce ? 0 : 1, ease: 'expo.out', stagger: .08, overwrite: true }),
+  });
+  if (!reduce && matchMedia('(hover: hover)').matches) {
+    document.querySelectorAll('.card').forEach((c) => {
+      c.addEventListener('pointermove', (e) => {
+        const r = c.getBoundingClientRect();
+        gsap.to(c, { rotateY: ((e.clientX - r.left) / r.width - .5) * 10, rotateX: -((e.clientY - r.top) / r.height - .5) * 10, y: -8, transformPerspective: 900, duration: .5, ease: 'power3.out' });
+      });
+      c.addEventListener('pointerleave', () => gsap.to(c, { rotateX: 0, rotateY: 0, y: 0, duration: 1, ease: 'elastic.out(1,.4)' }));
+    });
+  }
+  // section headings rise
+  gsap.utils.toArray('.s-head h2').forEach((h) => gsap.from(h, { y: reduce ? 0 : 60, opacity: 0, duration: 1.2, ease: 'expo.out', scrollTrigger: { trigger: h, start: 'top 85%' } }));
+
+  /* ---------- work: filter + aspect with Flip ---------- */
+  const grid = document.getElementById('grid');
+  const items = gsap.utils.toArray('.item');
+  const flipDo = (fn) => {
+    const state = Flip.getState(items);
+    fn();
+    Flip.from(state, { duration: reduce ? 0 : .7, ease: 'power3.inOut', absolute: false, scale: true, nested: true,
+      onEnter: (els) => gsap.fromTo(els, { opacity: 0, scale: .85 }, { opacity: 1, scale: 1, duration: .6 }),
+      onLeave: (els) => gsap.to(els, { opacity: 0, scale: .85, duration: .4 }) });
+    ScrollTrigger.refresh();
+  };
+  document.querySelectorAll('[data-filter]').forEach((b) => b.addEventListener('click', () => {
+    document.querySelectorAll('[data-filter]').forEach((x) => x.setAttribute('aria-pressed', x === b));
+    const f = b.dataset.filter;
+    flipDo(() => items.forEach((it) => it.classList.toggle('hide', f !== 'all' && it.dataset.cat !== f)));
+  }));
+  document.querySelectorAll('[data-ar]').forEach((b) => { if (b.tagName !== 'BUTTON') return; b.addEventListener('click', () => {
+    document.querySelectorAll('button[data-ar]').forEach((x) => x.setAttribute('aria-pressed', x === b));
+    flipDo(() => grid.dataset.ar = b.dataset.ar);
+  }); });
+  gsap.from(items, { y: reduce ? 0 : 80, opacity: 0, duration: 1.1, stagger: .08, ease: 'expo.out', scrollTrigger: { trigger: grid, start: 'top 85%' } });
+
+  // lightbox
+  const lb = document.getElementById('lb');
+  items.forEach((it) => {
+    if (!it.dataset.img) return;
+    it.querySelector('.media').addEventListener('click', () => {
+      lb.querySelector('img').src = it.dataset.img; lb.querySelector('img').alt = it.dataset.title;
+      lb.querySelector('h3').textContent = it.dataset.title; lb.querySelector('p').textContent = it.dataset.desc;
+      lb.querySelector('.lb-cat').textContent = { luxury: 'Luxury jewellery', food: 'Food & indulgence', ugc: 'UGC & Reels' }[it.dataset.cat];
+      lb.querySelector('.kicker i').innerHTML = VRU.mark();
+      lb.showModal();
+      if (!reduce) gsap.fromTo('.lb-in', { y: 60, scale: .94, opacity: 0 }, { y: 0, scale: 1, opacity: 1, duration: .6, ease: 'expo.out' });
+    });
+  });
+  lb.querySelector('.lb-close').addEventListener('click', () => lb.close());
+  lb.addEventListener('click', (e) => { if (e.target === lb) lb.close(); });
+  lb.querySelector('a').addEventListener('click', () => lb.close());
+
+  /* ---------- process: horizontal walk ---------- */
+  const mm = gsap.matchMedia();
+  mm.add('(min-width: 900px)', () => {
+    const track = document.getElementById('track');
+    const mini = document.getElementById('mini');
+    const steps = gsap.utils.toArray('.step');
+    const dist = () => track.scrollWidth - innerWidth;
+    let t2;
+    const ptl = gsap.timeline({ defaults: { ease: 'none' }, scrollTrigger: {
+      trigger: '#process', start: 'top top', end: () => '+=' + dist(), pin: true, scrub: reduce ? true : 0.8, invalidateOnRefresh: true,
+      onUpdate(self) {
+        const p = self.progress;
+        steps.forEach((s, i) => s.classList.toggle('on', p > (i + .35) / (steps.length + .6)));
+        if (reduce) return;
+        mini.classList.add('walking'); mini.classList.remove('vru-idle');
+        mini.querySelector('.inner').style.transform = self.direction < 0 ? 'scaleX(-1)' : '';
+        clearTimeout(t2); t2 = setTimeout(() => { mini.classList.remove('walking'); mini.classList.add('vru-idle'); }, 160);
+      } } });
+    ptl.to(track, { x: () => -dist() }, 0)
+       .to(mini, { left: () => (mini.parentElement.clientWidth - mini.clientWidth) + 'px' }, 0)
+       .to('#pathFill', { strokeDashoffset: 0 }, 0);
+    return () => steps.forEach((s) => s.classList.remove('on'));
+  });
+  mm.add('(max-width: 899px)', () => {
+    gsap.utils.toArray('.step').forEach((s) => ScrollTrigger.create({ trigger: s, start: 'top 70%', end: 'bottom 30%', toggleClass: 'on' }));
+  });
+
+  // contact character peeks in
+  gsap.from('.contact-char', { y: reduce ? 0 : 120, opacity: 0, duration: 1.4, ease: 'expo.out', scrollTrigger: { trigger: '#contact', start: 'top 70%' } });
+
+  addEventListener('load', () => ScrollTrigger.refresh());
+})();
+</script>
+</body>
+</html>
